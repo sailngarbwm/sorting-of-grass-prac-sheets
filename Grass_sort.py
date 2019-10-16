@@ -175,11 +175,20 @@ def grass_sort(use_dir,sheetlist):
 
             if i >= 51 and mean_quad[i] > 0:
                 df_quad.loc[ns_ct,[0,1,2,3]] = df_d3.loc[i,[0,1,2,3]].values
-                mean_quad[ns_ct] = mean_quad[i]
+                if ns_ct < len(mean_quad):
+                    mean_quad[ns_ct] = mean_quad[i]
+                else: #added this in case there are more unknowns than I first anticipate
+                    mean_quad = np.append(mean_quad, mean_quad[i])
                 mean_quad[i] = 0
                 #print('unk moved')
                 ns_ct+=1
             i +=1
+            
+        if len(mean_quad) > df_quad.shape[0]:
+            #need to create the master dataframe
+#             df_quad = df_d2.loc[:,[0,1,2,3]]
+            #add a bunch mroe rows for unknowns
+            df_quad = add_df_row(df_quad,len(mean_quad) - df_quad.shape[0]+1)
 
         df_quad[names] = mean_quad
         ct +=1
